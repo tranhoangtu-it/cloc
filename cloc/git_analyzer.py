@@ -148,22 +148,19 @@ class GitAnalyzer:
         files = self.get_files_at_commit(commit)
         
         # Create temporary files to analyze
-        temp_files = []
-        file_contents = {}
-        
-        try:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_files = []
+            
             for file_path in files:
                 content = self.get_file_content_at_commit(file_path, commit)
                 if content is not None:
-                    # Create temporary file
-                    temp_file_path = os.path.join(self.repo_path, f"temp_{commit_id}_{file_path.replace('/', '_')}")
-                    os.makedirs(os.path.dirname(temp_file_path), exist_ok=True)
+                    # Create temporary file within the temporary directory
+                    temp_file_path = os.path.join(temp_dir, f"temp_{commit_id}_{file_path.replace('/', '_')}")
                     
                     with open(temp_file_path, 'w', encoding='utf-8') as f:
                         f.write(content)
                     
                     temp_files.append(temp_file_path)
-                    file_contents[temp_file_path] = content
             
             # Analyze the temporary files
             project_stats = self.counter.count_files(temp_files)
