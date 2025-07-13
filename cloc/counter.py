@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from .utils import (
     LanguageConfig, get_language_from_extension, is_binary_file,
-    should_ignore_file, get_file_size, get_relative_path
+    should_ignore_file, get_file_size
 )
 
 
