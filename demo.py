@@ -120,32 +120,39 @@ def main():
     
     # Analyze current directory
     print("\nAnalyzing current directory...")
-    stats = counter.count_directory('.')
-    
+    try:
+        stats = counter.count_directory('.')
+    except Exception as e:
+        print(f"Error analyzing directory: {e}")
+        return
+
     # Print console report
     print("\nConsole Report:")
     report = reporter.format_console_report(stats, show_files=True)
     print(report)
-    
+
     # Export to different formats
     print("\nExporting reports...")
-    reporter.export_json(stats.__dict__, 'demo_report.json')
-    reporter.export_csv(stats, 'demo_report.csv')
-    reporter.export_markdown(stats, 'demo_report.md')
-    reporter.export_html(stats, 'demo_report.html')
-    
+    try:
+        reporter.export_json(stats.__dict__, 'demo_report.json')
+        reporter.export_csv(stats, 'demo_report.csv')
+        reporter.export_markdown(stats, 'demo_report.md')
+        reporter.export_html(stats, 'demo_report.html')
+    except Exception as e:
+        print(f"Error exporting reports: {e}")
+
     print("Reports exported to:")
     print("  - demo_report.json")
     print("  - demo_report.csv")
     print("  - demo_report.md")
     print("  - demo_report.html")
-    
+
     # Clean up demo files
     print("\nCleaning up demo files...")
     for file_path in ['demo.py', 'demo.js', 'Demo.java']:
         if os.path.exists(file_path):
             os.remove(file_path)
-    
+
     print("Demo completed!")
 
 
