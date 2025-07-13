@@ -112,7 +112,11 @@ def main():
     
     # Create demo files
     print("Creating demo files...")
-    create_demo_files()
+    try:
+        create_demo_files()
+    except Exception as e:
+        print(f"Error creating demo files: {e}")
+        print("Continuing with existing files...")
     
     # Initialize counter and reporter
     counter = CodeCounter()
@@ -133,25 +137,58 @@ def main():
 
     # Export to different formats
     print("\nExporting reports...")
+    exported_files = []
+    
     try:
         reporter.export_json(stats.__dict__, 'demo_report.json')
-        reporter.export_csv(stats, 'demo_report.csv')
-        reporter.export_markdown(stats, 'demo_report.md')
-        reporter.export_html(stats, 'demo_report.html')
+        exported_files.append('demo_report.json')
     except Exception as e:
-        print(f"Error exporting reports: {e}")
-
-    print("Reports exported to:")
-    print("  - demo_report.json")
-    print("  - demo_report.csv")
-    print("  - demo_report.md")
-    print("  - demo_report.html")
+        print(f"Warning: Failed to export JSON report: {e}")
+    
+    try:
+        reporter.export_csv(stats, 'demo_report.csv')
+        exported_files.append('demo_report.csv')
+    except Exception as e:
+        print(f"Warning: Failed to export CSV report: {e}")
+    
+    try:
+        reporter.export_markdown(stats, 'demo_report.md')
+        exported_files.append('demo_report.md')
+    except Exception as e:
+        print(f"Warning: Failed to export Markdown report: {e}")
+    
+    try:
+        reporter.export_html(stats, 'demo_report.html')
+        exported_files.append('demo_report.html')
+    except Exception as e:
+        print(f"Warning: Failed to export HTML report: {e}")
+    
+    if exported_files:
+        print("Reports exported to:")
+        for file_path in exported_files:
+            print(f"  - {file_path}")
+    else:
+        print("Warning: No reports were successfully exported")
 
     # Clean up demo files
     print("\nCleaning up demo files...")
-    for file_path in ['demo.py', 'demo.js', 'Demo.java']:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    cleanup_files = ['demo.py', 'demo.js', 'Demo.java']
+    cleaned_files = []
+    failed_cleanups = []
+    
+    for file_path in cleanup_files:
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                cleaned_files.append(file_path)
+        except Exception as e:
+            print(f"Warning: Failed to remove {file_path}: {e}")
+            failed_cleanups.append(file_path)
+    
+    if cleaned_files:
+        print(f"Successfully cleaned up {len(cleaned_files)} files")
+    if failed_cleanups:
+        print(f"Warning: Failed to clean up {len(failed_cleanups)} files: {', '.join(failed_cleanups)}")
 
     print("Demo completed!")
 

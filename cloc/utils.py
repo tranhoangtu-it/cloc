@@ -5,8 +5,7 @@ Utility functions for CLOC tool.
 import os
 import re
 from pathlib import Path
--from typing import Dict, List, Set, Tuple, Optional
-+from typing import List, Optional
+from typing import Dict, List, Set, Tuple, Optional
 
 
 class LanguageConfig:
