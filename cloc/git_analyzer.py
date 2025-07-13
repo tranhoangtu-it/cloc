@@ -217,13 +217,10 @@ class GitAnalyzer:
             content2 = self.get_file_content_at_commit(file_path, commit2)
             
             if content1 is not None and content2 is not None:
-                # Create temporary files for comparison
-                temp_file1 = os.path.join(self.repo_path, f"temp_comp1_{file_path.replace('/', '_')}")
-                temp_file2 = os.path.join(self.repo_path, f"temp_comp2_{file_path.replace('/', '_')}")
-                
-                try:
-                    os.makedirs(os.path.dirname(temp_file1), exist_ok=True)
-                    os.makedirs(os.path.dirname(temp_file2), exist_ok=True)
+                # Create temporary files for comparison within a TemporaryDirectory
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_file1 = os.path.join(temp_dir, f"temp_comp1_{file_path.replace('/', '_')}")
+                    temp_file2 = os.path.join(temp_dir, f"temp_comp2_{file_path.replace('/', '_')}")
                     
                     with open(temp_file1, 'w', encoding='utf-8') as f:
                         f.write(content1)
