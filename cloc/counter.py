@@ -5,7 +5,7 @@ Code Lines of Code Counter module.
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional, NamedTuple
+from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 
 from .utils import (
