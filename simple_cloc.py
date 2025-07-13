@@ -316,8 +316,7 @@ class SimpleCodeCounter:
         blank_lines = 0
         
         in_multiline_comment = False
-        multiline_start_pattern = None
-        multiline_end_pattern = None
+        in_multiline_comment = False
         
         # Get comment patterns for the language
         single_line_pattern = None
