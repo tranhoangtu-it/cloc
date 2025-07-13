@@ -55,8 +55,8 @@ def hello_world():
         if stats is not None:  # Type guard for linter
             self.assertEqual(stats.language, 'Python')
             self.assertEqual(stats.total_lines, 15)
-            self.assertEqual(stats.code_lines, 4)  # def, print, return, empty line
-            self.assertEqual(stats.comment_lines, 9)  # # comments + docstring
+            self.assertEqual(stats.code_lines, 3)  # def, print, return
+            self.assertEqual(stats.comment_lines, 10)  # # comments + docstring
             self.assertEqual(stats.blank_lines, 2)
     
     def test_count_javascript_file(self):

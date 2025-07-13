@@ -233,14 +233,6 @@ class GitAnalyzer:
                     if stats1_file and stats2_file:
                         loc_change = stats2_file.code_lines - stats1_file.code_lines
                         loc_changes[file_path] = loc_change
-                
-                finally:
-                    # Clean up
-                    for temp_file in [temp_file1, temp_file2]:
-                        try:
-                            os.remove(temp_file)
-                        except OSError:
-                            pass
         
         return CommitComparison(
             commit1=stats1,

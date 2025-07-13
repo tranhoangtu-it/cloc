@@ -359,7 +359,16 @@ class SimpleCodeCounter:
             
             # Check for single line comments (only if not in multiline comment)
             if not in_multiline_comment and single_line_pattern and re.search(single_line_pattern, line):
-                comment_lines += 1
+                # Split the line at the comment marker
+                parts = re.split(single_line_pattern, line, maxsplit=1)
+                code_part = parts[0].strip()
+                
+                # If there's code before the comment, count it as a code line
+                if code_part:
+                    code_lines += 1
+                else:
+                    # If there's no code before the comment, count it as a comment line
+                    comment_lines += 1
                 continue
                 
             # If we reach here, it's a code line
