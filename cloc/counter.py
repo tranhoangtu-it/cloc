@@ -105,6 +105,7 @@ class CodeCounter:
         blank_lines = 0
         
         in_multiline_comment = False
+        single_line_pattern = None
         multiline_start_pattern = None
         multiline_end_pattern = None
         
@@ -125,10 +126,18 @@ class CodeCounter:
                 
             # Check for multiline comments
             if multiline_start_pattern and multiline_end_pattern:
+                # Check if multiline comment starts and ends on the same line
                 if re.search(multiline_start_pattern, line):
-                    in_multiline_comment = True
-                    comment_lines += 1
-                    continue
+                    # Look for the end pattern on the same line
+                    if re.search(multiline_end_pattern, line):
+                        # Multiline comment starts and ends on same line
+                        comment_lines += 1
+                        continue
+                    else:
+                        # Multiline comment starts but doesn't end on this line
+                        in_multiline_comment = True
+                        comment_lines += 1
+                        continue
                     
                 if in_multiline_comment:
                     comment_lines += 1

@@ -316,7 +316,6 @@ class SimpleCodeCounter:
         blank_lines = 0
         
         in_multiline_comment = False
-        in_multiline_comment = False
         
         # Get comment patterns for the language
         single_line_pattern = None
@@ -339,10 +338,18 @@ class SimpleCodeCounter:
                 
             # Check for multiline comments
             if multiline_start_pattern and multiline_end_pattern:
+                # Check if multiline comment starts and ends on the same line
                 if re.search(multiline_start_pattern, line):
-                    in_multiline_comment = True
-                    comment_lines += 1
-                    continue
+                    # Look for the end pattern on the same line
+                    if re.search(multiline_end_pattern, line):
+                        # Multiline comment starts and ends on same line
+                        comment_lines += 1
+                        continue
+                    else:
+                        # Multiline comment starts but doesn't end on this line
+                        in_multiline_comment = True
+                        comment_lines += 1
+                        continue
                     
                 if in_multiline_comment:
                     comment_lines += 1
@@ -352,7 +359,18 @@ class SimpleCodeCounter:
             
             # Check for single line comments
             if single_line_pattern and re.search(single_line_pattern, line):
-                comment_lines += 1
+                # Split the line at the comment marker
+                parts = re.split(single_line_pattern, line, maxsplit=1)
+                code_part = parts[0].strip()
+                comment_part = parts[1].strip() if len(parts) > 1 else ""
+                
+                # Count the code portion if it exists
+                if code_part:
+                    code_lines += 1
+                
+                # Count the comment portion
+                if comment_part:
+                    comment_lines += 1
                 continue
                 
             # If we reach here, it's a code line
