@@ -32,6 +32,7 @@ Content-Type: application/json
 ```
 https://api.cloc.example.com/v1
 ```
+**Note**: This is a placeholder URL. Replace with your actual API endpoint.
 
 ### Rate Limiting
 - 1000 requests per hour for authenticated users
@@ -45,15 +46,37 @@ https://api.cloc.example.com/v1
 
 Counts the lines of code in a given file.
 
+#### Input Validation
+
+- **filePath**: Must be a non-empty string, validated for path traversal attacks
+- **options**: Must be an object (if provided), all properties validated for type and range
+- **encoding**: Must be a valid encoding string (default: 'utf8')
+- **fileType**: Must be a valid language identifier (if provided)
+
 #### Parameters
 - `filePath` (string, required): Path to the file to analyze
 - `options` (object, optional): Configuration options
   - `includeComments` (boolean, default: false): Whether to include comment lines in the count
   - `includeBlankLines` (boolean, default: false): Whether to include blank lines in the count
   - `fileType` (string, optional): Override file type detection
+  - `encoding` (string, default: 'utf8'): File encoding
 
 #### Returns
 - `Promise<LineCount>`: Object containing line count information
+
+#### LineCount Object Structure
+```javascript
+{
+  file: string,           // File path
+  language: string,       // Detected language
+  total: number,          // Total lines
+  code: number,           // Lines of code
+  comments: number,       // Comment lines
+  blank: number,          // Blank lines
+  size: number,           // File size in bytes
+  complexity: number      // Cyclomatic complexity
+}
+```
 
 #### Example
 ```javascript
@@ -63,13 +86,23 @@ const lineCount = await countLines('./src/index.js', {
 });
 
 console.log(lineCount);
-// Output: { total: 150, code: 120, comments: 20, blank: 10 }
+// Output: {
+//   file: './src/index.js',
+//   language: 'JavaScript',
+//   total: 150,
+//   code: 120,
+//   comments: 20,
+//   blank: 10,
+//   size: 4096,
+//   complexity: 15
+// }
 ```
 
 #### Error Handling
 - Throws `FileNotFoundError` if file doesn't exist
 - Throws `PermissionError` if file cannot be read
 - Throws `UnsupportedFileTypeError` if file type is not supported
+- Throws `InvalidEncodingError` if file encoding is invalid
 
 ---
 
@@ -84,6 +117,8 @@ Recursively analyzes all files in a directory and returns comprehensive statisti
   - `exclude` (array, optional): Array of file patterns to exclude
   - `include` (array, optional): Array of file patterns to include
   - `maxDepth` (number, default: Infinity): Maximum directory depth to analyze
+  - `parallel` (boolean, default: true): Whether to process files in parallel
+  - `maxConcurrency` (number, default: 4): Maximum concurrent operations
 
 #### Returns
 - `Promise<DirectoryAnalysis>`: Object containing comprehensive analysis
@@ -392,6 +427,37 @@ try {
 
 ---
 
+## Security Considerations
+
+### File Path Validation
+
+All functions that accept file paths perform validation to prevent security issues:
+
+- **Path Traversal Protection**: File paths are validated to prevent directory traversal attacks
+- **Symlink Protection**: By default, symbolic links are not followed unless explicitly configured
+- **Permission Checks**: Functions verify read permissions before accessing files
+- **File Size Limits**: Large files are rejected to prevent resource exhaustion
+
+### Input Validation
+
+- **Encoding Validation**: File encoding is validated to prevent encoding-based attacks
+- **Pattern Validation**: File patterns in exclude/include arrays are validated
+- **Configuration Validation**: All configuration options are validated for type and range
+
+### Best Practices
+
+```javascript
+// Always validate user input before passing to cloc functions
+const userPath = sanitizePath(userInput);
+const result = await countLines(userPath);
+
+// Use absolute paths when possible
+const absolutePath = path.resolve('./relative/path');
+const analysis = await analyzeDirectory(absolutePath);
+```
+
+---
+
 ## Contributing
 
 ### Documentation Standards
@@ -477,9 +543,11 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 For questions, issues, or contributions:
 
-- GitHub Issues: [Create an issue](https://github.com/username/cloc/issues)
-- Documentation: [Full documentation](https://cloc.example.com/docs)
-- API Reference: [API docs](https://cloc.example.com/api)
+- GitHub Issues: [Create an issue](https://github.com/your-username/cloc/issues)
+- Documentation: [Full documentation](https://your-domain.com/docs)
+- API Reference: [API docs](https://your-domain.com/api)
+
+**Note**: Replace the placeholder URLs with your actual project URLs.
 
 ---
 

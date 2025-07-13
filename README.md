@@ -161,13 +161,18 @@ try {
   const result = await countLines('./nonexistent-file.js');
 } catch (error) {
   if (error instanceof FileNotFoundError) {
-    console.log('File not found');
+    console.log('File not found, skipping...');
   } else if (error instanceof PermissionError) {
-    console.log('Permission denied');
+    console.log('Permission denied, check file permissions');
+  } else if (error instanceof UnsupportedFileTypeError) {
+    console.log('File type not supported');
+  } else if (error instanceof InvalidEncodingError) {
+    console.log('Invalid file encoding');
   } else {
     console.error('Unexpected error:', error.message);
   }
 }
+```
 ```
 
 ### Performance
@@ -176,6 +181,29 @@ try {
 - **Intelligent Caching**: Cache results for frequently analyzed files
 - **Streaming**: Handle large files efficiently
 - **Memory Optimization**: Minimal memory footprint
+
+#### Performance Guidelines
+
+- **Large Projects**: Use `maxConcurrency` option to control resource usage
+- **Memory Usage**: Monitor memory usage for projects with many large files
+- **Caching**: Enable caching for repeated analysis of the same files
+- **File Size Limits**: Set appropriate `maxFileSize` limits for your environment
+
+#### Performance Tuning
+
+```javascript
+// For large projects, adjust concurrency
+const analysis = await analyzeDirectory('./large-project', {
+  maxConcurrency: 2,  // Reduce for memory-constrained environments
+  maxFileSize: 5242880  // 5MB limit
+});
+
+// For repeated analysis, enable caching
+const analyzer = new FileAnalyzer({
+  cacheResults: true,
+  cacheTTL: 3600000  // 1 hour cache
+});
+```
 
 ### Contributing
 
