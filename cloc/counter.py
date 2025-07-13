@@ -138,7 +138,18 @@ class CodeCounter:
             
             # Check for single line comments
             if single_line_pattern and re.search(single_line_pattern, line):
-                comment_lines += 1
+                # Split the line at the comment marker
+                parts = re.split(single_line_pattern, line, maxsplit=1)
+                code_part = parts[0].strip()
+                comment_part = parts[1].strip() if len(parts) > 1 else ""
+                
+                # Count the code portion if it exists
+                if code_part:
+                    code_lines += 1
+                
+                # Count the comment portion
+                if comment_part:
+                    comment_lines += 1
                 continue
                 
             # If we reach here, it's a code line
