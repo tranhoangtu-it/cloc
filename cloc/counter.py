@@ -105,6 +105,7 @@ class CodeCounter:
         blank_lines = 0
         
         in_multiline_comment = False
+        single_line_pattern = None
         multiline_start_pattern = None
         multiline_end_pattern = None
         
@@ -122,22 +123,30 @@ class CodeCounter:
             if not line.strip():
                 blank_lines += 1
                 continue
-                
+            
             # Check for multiline comments
             if multiline_start_pattern and multiline_end_pattern:
+                # Check if multiline comment starts and ends on the same line
+                if re.search(multiline_start_pattern, line) and re.search(multiline_end_pattern, line):
+                    comment_lines += 1
+                    continue
+                
+                # Check if multiline comment starts
                 if re.search(multiline_start_pattern, line):
                     in_multiline_comment = True
                     comment_lines += 1
                     continue
-                    
+                
+                # Check if we're in a multiline comment
                 if in_multiline_comment:
                     comment_lines += 1
+                    # Check if multiline comment ends
                     if re.search(multiline_end_pattern, line):
                         in_multiline_comment = False
                     continue
             
-            # Check for single line comments
-            if single_line_pattern and re.search(single_line_pattern, line):
+            # Check for single line comments (only if not in multiline comment)
+            if not in_multiline_comment and single_line_pattern and re.search(single_line_pattern, line):
                 # Split the line at the comment marker
                 parts = re.split(single_line_pattern, line, maxsplit=1)
                 code_part = parts[0].strip()
@@ -151,7 +160,7 @@ class CodeCounter:
                 if comment_part:
                     comment_lines += 1
                 continue
-                
+            
             # If we reach here, it's a code line
             code_lines += 1
         

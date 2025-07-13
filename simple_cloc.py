@@ -339,19 +339,27 @@ class SimpleCodeCounter:
                 
             # Check for multiline comments
             if multiline_start_pattern and multiline_end_pattern:
+                # Check if multiline comment starts and ends on the same line
+                if re.search(multiline_start_pattern, line) and re.search(multiline_end_pattern, line):
+                    comment_lines += 1
+                    continue
+                
+                # Check if multiline comment starts
                 if re.search(multiline_start_pattern, line):
                     in_multiline_comment = True
                     comment_lines += 1
                     continue
-                    
+                
+                # Check if we're in a multiline comment
                 if in_multiline_comment:
                     comment_lines += 1
+                    # Check if multiline comment ends
                     if re.search(multiline_end_pattern, line):
                         in_multiline_comment = False
                     continue
             
-            # Check for single line comments
-            if single_line_pattern and re.search(single_line_pattern, line):
+            # Check for single line comments (only if not in multiline comment)
+            if not in_multiline_comment and single_line_pattern and re.search(single_line_pattern, line):
                 comment_lines += 1
                 continue
                 
@@ -505,8 +513,22 @@ class SimpleReporter:
                 return obj.isoformat()
             raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
         
+        def serialize_dataclass(obj):
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
+        def custom_serializer(obj):
+            try:
+                return serialize_datetime(obj)
+            except TypeError:
+                try:
+                    return serialize_dataclass(obj)
+                except:
+                    return str(obj)
+        
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2, default=serialize_datetime)
+            json.dump(data, f, indent=2, default=custom_serializer)
     
     def export_csv(self, stats: ProjectStats, output_file: str) -> None:
         """Export project statistics to CSV format."""

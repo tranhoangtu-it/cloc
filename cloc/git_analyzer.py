@@ -3,6 +3,7 @@ Git repository analyzer module.
 """
 
 import os
+import tempfile
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
@@ -172,14 +173,6 @@ class GitAnalyzer:
                 message=commit.message.strip(),
                 project_stats=project_stats
             )
-        
-        finally:
-            # Clean up temporary files
-            for temp_file in temp_files:
-                try:
-                    os.remove(temp_file)
-                except OSError:
-                    pass
     
     def compare_commits(self, commit_id1: str, commit_id2: str) -> CommitComparison:
         """
@@ -204,7 +197,7 @@ class GitAnalyzer:
         
         for change in diff:
             if change.change_type == 'A':  # Added
-                added_files.append(change.a_path)
+                added_files.append(change.b_path)
             elif change.change_type == 'D':  # Deleted
                 removed_files.append(change.a_path)
             elif change.change_type == 'M':  # Modified

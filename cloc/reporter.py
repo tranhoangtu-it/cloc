@@ -212,8 +212,22 @@ class Reporter:
                 return obj.isoformat()
             raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
         
+        def serialize_dataclass(obj):
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
+        def custom_serializer(obj):
+            try:
+                return serialize_datetime(obj)
+            except TypeError:
+                try:
+                    return serialize_dataclass(obj)
+                except:
+                    return str(obj)
+        
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2, default=serialize_datetime)
+            json.dump(data, f, indent=2, default=custom_serializer)
     
     def export_csv(self, stats: ProjectStats, output_file: str) -> None:
         """

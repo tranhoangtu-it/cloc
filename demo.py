@@ -17,7 +17,7 @@ def create_demo_files():
     """Create demo files for testing."""
     
     # Create a Python file
-    with open('demo.py', 'w', encoding='utf-8') as f:
+    with open('demo_test.py', 'w', encoding='utf-8') as f:
         f.write('''#!/usr/bin/env python3
 """
 Demo Python file for CLOC testing.
@@ -172,7 +172,7 @@ def main():
 
     # Clean up demo files
     print("\nCleaning up demo files...")
-    cleanup_files = ['demo.py', 'demo.js', 'Demo.java']
+    cleanup_files = ['demo_test.py', 'demo.js', 'Demo.java']
     cleaned_files = []
     failed_cleanups = []
     
